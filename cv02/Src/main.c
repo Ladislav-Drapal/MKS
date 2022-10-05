@@ -38,18 +38,30 @@ int main(void)
 #include <stm32f0xx.h>
 #include <stdint.h>
 
+static volatile uint32_t Tick; //global
+
+#define LED_TIME_BLINK 300 // LED1
 
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
 
+void blikac(void)
+{
+	static uint32_t delay;
 
+	if (Tick > delay + LED_TIME_BLINK) {
+		GPIOA->ODR ^= (1<<4);
+		delay = Tick;
+	}
+}
 
 
 int main(void)
 {
 
+	SysTick_Config(8000); // 1ms
 
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOBEN | RCC_AHBENR_GPIOCEN; // enable
 	GPIOA->MODER |= GPIO_MODER_MODER4_0; // LED1 = PA4, output
@@ -69,14 +81,23 @@ int main(void)
 
 	for(;;) {
 
+		blikac();
+
 	}
 }
 
 void EXTI0_1_IRQHandler(void)
-	{
+{
 	if (EXTI->PR & EXTI_PR_PR0) { // check line 0 has triggered the IT
-	EXTI->PR |= EXTI_PR_PR0; // clear the pending bit
-    GPIOB->ODR ^= (1<<0);
+		EXTI->PR |= EXTI_PR_PR0; // clear the pending bit
+		GPIOB->ODR ^= (1<<0);
 	}
 }
+
+void SysTick_Handler(void)
+{
+	Tick++;
+}
+
+
 
