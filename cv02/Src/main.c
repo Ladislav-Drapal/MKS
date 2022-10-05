@@ -44,6 +44,7 @@ static volatile uint32_t Tick; //global
 #define LED_TIME_SHORT 100
 #define LED_TIME_LONG 1000
 #define BUTTON_SAMPLE 5
+#define BUTTON_SAMPLE_LONG 40
 
 
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
@@ -69,7 +70,7 @@ void tlacitko(void)
 	static uint32_t old_s1;
 	static uint32_t stop2;
 
-
+/*
 	uint32_t new_s2 = GPIOC->IDR & (1<<0);
 	uint32_t new_s1 = GPIOC->IDR & (1<<1);
 
@@ -90,7 +91,7 @@ void tlacitko(void)
 		GPIOB->BSRR = (1<<0);
 	}
 	old_s1 = new_s1; // reaction on switch 1
-
+*/
 	if (Tick > stop2 + BUTTON_SAMPLE) {
 		static uint16_t debounce = 0xFFFF;
 
@@ -98,8 +99,21 @@ void tlacitko(void)
 		if (GPIOC->IDR & (1<<1)) debounce |=0x0001;
 	    if (debounce == 0x8000) {
 	    	off_time = Tick + LED_TIME_LONG; //operation
-	    	GPIOB->BRR = (1<<0);
+	    	GPIOB->BSRR = (1<<0);
+	    	debounce = 0xFFFF;
 	    }
+
+	}
+	if (Tick > stop2 + BUTTON_SAMPLE_LONG) {
+		static uint16_t debounce = 0xFFFF;
+
+		debounce <<= 1;
+		if (GPIOC->IDR & (1<<0)) debounce |=0x0001;
+		if (debounce == 0x8000) {
+			off_time = Tick + LED_TIME_SHORT; //operation
+			GPIOB->BSRR = (1<<0);
+			debounce = 0xFFFF;
+		}
 
 	}
 
@@ -122,10 +136,10 @@ int main(void)
 
 	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 
-	SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI0_PC; // select PC0 for EXTI0
+	/*SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI0_PC; // select PC0 for EXTI0
 	EXTI->IMR |= EXTI_IMR_MR0; // mask
 	EXTI->FTSR |= EXTI_FTSR_TR0; // trigger on falling edge
-	NVIC_EnableIRQ(EXTI0_1_IRQn); // enable EXTI0_1
+	NVIC_EnableIRQ(EXTI0_1_IRQn); // enable EXTI0_1 */
 
 
 	for(;;) {
@@ -136,13 +150,13 @@ int main(void)
 	}
 }
 
-void EXTI0_1_IRQHandler(void)
+/*void EXTI0_1_IRQHandler(void)
 {
 	if (EXTI->PR & EXTI_PR_PR0) { // check line 0 has triggered the IT
 		EXTI->PR |= EXTI_PR_PR0; // clear the pending bit
 		GPIOB->ODR ^= (1<<0);
 	}
-}
+} */
 
 void SysTick_Handler(void)
 {
