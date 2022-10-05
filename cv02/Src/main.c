@@ -41,6 +41,9 @@ int main(void)
 static volatile uint32_t Tick; //global
 
 #define LED_TIME_BLINK 300 // LED1
+#define LED_TIME_SHORT 100
+#define LED_TIME_LONG 1000
+
 
 #if !defined(__SOFT_FP__) && defined(__ARM_FP)
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
@@ -54,6 +57,38 @@ void blikac(void)
 	if (Tick > delay + LED_TIME_BLINK) {
 		GPIOA->ODR ^= (1<<4);
 		delay = Tick;
+	}
+
+}
+
+void tlacitko(void)
+{
+	static uint32_t old_s2;
+	static uint32_t off_time;
+	static uint32_t old_s1;
+
+	uint32_t new_s2 = GPIOC->IDR & (1<<0);
+	uint32_t new_s1 = GPIOC->IDR & (1<<1);
+
+	if (old_s2 && !new_s2) { // falling edge
+		off_time = Tick + LED_TIME_SHORT;
+		GPIOB->BSRR = (1<<0);
+	}
+	old_s2 = new_s2;
+
+	if (Tick > off_time) {
+		GPIOB->BRR = (1<<0);
+	}
+
+
+	if (old_s1 && !new_s1) { // falling edge
+		off_time = Tick + LED_TIME_LONG; // LED 2
+		GPIOB->BSRR = (1<<0);
+	}
+	old_s1 = new_s1; // reaction on switch 1
+
+	if (Tick > off_time) {
+		GPIOB->BRR = (1<<0);
 	}
 }
 
@@ -77,11 +112,10 @@ int main(void)
 	NVIC_EnableIRQ(EXTI0_1_IRQn); // enable EXTI0_1
 
 
-
-
 	for(;;) {
 
 		blikac();
+		tlacitko();
 
 	}
 }
