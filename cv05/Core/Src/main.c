@@ -110,26 +110,40 @@ static void uart_process_command(char *cmd) {
 		addr = atoi(token);
 
 		HAL_I2C_Mem_Read(&hi2c1, EEPROM_ADDR, addr, I2C_MEMADD_SIZE_16BIT, &value, 1, 1000);
-
 		while (HAL_I2C_IsDeviceReady(&hi2c1, EEPROM_ADDR, 300, 1000) == HAL_TIMEOUT) {}
 
 		printf("Adresa 0x%04X = 0x%02X\n", addr, value);
 	    }
 
 	 else if (strcasecmp(token, "WRITE") == 0){
-		token = strtok(NULL, " ");
 		static uint16_t addr = 0;
 		static uint8_t value =0;
+		token = strtok(NULL, " ");
 		value = atoi(token);
 		token = strtok(NULL, " ");
 		addr = atoi(token);
 
-
 		HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDR, addr, I2C_MEMADD_SIZE_16BIT, &value, 1, 1000);
 		while (HAL_I2C_IsDeviceReady(&hi2c1, EEPROM_ADDR, 300, 1000) == HAL_TIMEOUT) {}
 
-		printf("Ok\n");
+		printf("Adresa write 0x%04X = 0x%02X\n", addr, value);
 		}
+
+	 /* else if (strcasecmp(token, "DUMP") == 0){
+		 static uint8_t value =0;
+
+		 for (uint8_t i=0, i < read_num_bits, i++);
+
+			 HAL_I2C_Mem_Read(&hi2c1, EEPROM_ADDR, addr, I2C_MEMADD_SIZE_16BIT, &value, 1, 1000);
+			 while (HAL_I2C_IsDeviceReady(&hi2c1, EEPROM_ADDR, 300, 1000) == HAL_TIMEOUT) {}
+
+
+		}
+			 */
+
+
+
+
 
 
 	}
