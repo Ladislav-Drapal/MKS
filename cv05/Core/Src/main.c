@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 /* USER CODE END Includes */
 
@@ -52,6 +53,7 @@ DMA_HandleTypeDef hdma_usart2_rx;
 /* USER CODE BEGIN PV */
 static uint8_t uart_rx_buf[RX_BUFFER_LEN];
 static volatile uint16_t uart_rx_read_ptr = 0; //cteci ukazatel, vzdy cteme posledni hodnotu
+static volatile uint16_t EEPROM_ADDR = 0xA0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -101,6 +103,35 @@ static void uart_process_command(char *cmd) {
 		else printf("status LED2 off\n");
 
 		}
+	else if (strcasecmp(token, "READ") == 0){
+		token = strtok(NULL, " ");
+		static uint16_t addr = 0;
+		static uint8_t value = 0;
+		addr = atoi(token);
+
+		HAL_I2C_Mem_Read(&hi2c1, EEPROM_ADDR, addr, I2C_MEMADD_SIZE_16BIT, &value, 1, 1000);
+
+		while (HAL_I2C_IsDeviceReady(&hi2c1, EEPROM_ADDR, 300, 1000) == HAL_TIMEOUT) {}
+
+		printf("Adresa 0x%04X = 0x%02X\n", addr, value);
+	    }
+
+	 else if (strcasecmp(token, "WRITE") == 0){
+		token = strtok(NULL, " ");
+		static uint16_t addr = 0;
+		static uint8_t value =0;
+		value = atoi(token);
+		token = strtok(NULL, " ");
+		addr = atoi(token);
+
+
+		HAL_I2C_Mem_Write(&hi2c1, EEPROM_ADDR, addr, I2C_MEMADD_SIZE_16BIT, &value, 1, 1000);
+		while (HAL_I2C_IsDeviceReady(&hi2c1, EEPROM_ADDR, 300, 1000) == HAL_TIMEOUT) {}
+
+		printf("Ok\n");
+		}
+
+
 	}
 
 static void uart_byte_available(uint8_t c) {
@@ -165,6 +196,8 @@ int main(void)
 				uart_rx_read_ptr = 0; // increase read pointer
 			uart_byte_available(b); // process every received byte with the RX state machine
 		}
+
+
 
     /* USER CODE END WHILE */
 
