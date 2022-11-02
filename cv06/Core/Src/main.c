@@ -35,6 +35,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+#define DISPLAY_PERIOD 50
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -48,7 +51,6 @@ ADC_HandleTypeDef hadc;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -110,37 +112,86 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
+	while (1) {
+		/* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
-	 /* OWConvertAll();
-	 HAL_Delay(CONVERT_T_DELAY);
-	 int16_t temp_18b20;
-	 OWReadTemperature(&temp_18b20);
-	 sct_value(temp_18b20/10);
-	 */
-
-	  //int16_t tempNTC = NTC_LOOKUP_TABLE[adc];
-
-
-	  sct_value(NTC_LOOKUP_TABLE[HAL_ADC_GetValue(&hadc)], 0);
-
-	  HAL_Delay(750);
-/*
-	  static uint32_t lastMeasurementTicks = 0;
-	  static uint32_t lastDisplayTicks = 0;
-
-	  if (HAL_GetTick() >= lastMeasurementTicks+750) {
-		  lastMeasurementTicks = HAL_GetTick();
-	  }
-
-	  if (HAL_GetTick() >= lastMeasurementTicks+100) {
-	  	  lastMeasurementTicks = HAL_GetTick();
-	  }
+		/* USER CODE BEGIN 3 */
+		/*OWConvertAll();
+		HAL_Delay(CONVERT_T_DELAY);
+		int16_t temp_18b20;
+		OWReadTemperature(&temp_18b20);
+		sct_value(temp_18b20 / 10, 0);
 */
-  }
+		//int16_t tempNTC = NTC_LOOKUP_TABLE[adc];
+
+		// sct_value(NTC_LOOKUP_TABLE[HAL_ADC_GetValue(&hadc)], 0); //0 je pridana z duvodu nerosviceni LED
+
+		// HAL_Delay(750);
+		int16_t temp_18b20;
+
+		static uint32_t lastMeasurementTicks = 0;
+		static uint32_t lastDisplayTicks = 0;
+		static uint8_t counter = 0; // zalozeni promenne 0
+		static int16_t ntc_value = 0;
+
+
+		static enum {SHOW_Meas,SHOW_NTC} state = SHOW_Meas;
+
+
+		if (HAL_GetTick() >= lastMeasurementTicks + 750) {
+			lastMeasurementTicks = HAL_GetTick();
+			OWConvertAll(); // probehne if
+
+			if (counter >= 1) {
+				OWReadTemperature(&temp_18b20); // v prvnim kroku neni vetsi, vykona se else
+				counter = 0;
+			}
+			else {
+				counter++;
+			}
+			ntc_value = DISPLAY_PERIOD(NTC_LOOKUP_TABLE[HAL_ADC_GetValue(&hadc)]);
+
+
+
+
+		}
+		if (HAL_GetTick() >= lastDisplayTicks + 50) { //cteni tlacitek
+			lastDisplayTicks = HAL_GetTick();
+
+			if (!HAL_GPIO_ReadPin(GPIOC, S1_Pin)) {
+				state = SHOW_Meas;
+
+			}
+
+			else if (!HAL_GPIO_ReadPin(GPIOC, S2_Pin)) {
+				state = SHOW_NTC;
+
+
+			}
+			switch (state) {
+			case SHOW_Meas:
+				//sct_value();
+				HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+				sct_value(temp_18b20 / 10, 0);
+
+				break;
+
+			case SHOW_NTC:
+				HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+				sct_value(ntc_value, 0);
+
+				break;
+
+			default:
+				state = SHOW_NTC;
+			}
+
+		}
+
+
+	}
   /* USER CODE END 3 */
 }
 
