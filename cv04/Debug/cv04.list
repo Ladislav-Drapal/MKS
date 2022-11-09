@@ -3363,7 +3363,7 @@ int main(void)
 	  // if(HAL_GetTick() >= lastDisplayTicks + DISPLAY_PERIOD) state = SHOW_POT;
 	  static uint32_t state_timeout2 = 0;
 
-	  if(HAL_GetTick() >= DISPLAY_PERIOD + state_timeout2){
+	  if(HAL_GetTick() >= DISPLAY_PERIOD + state_timeout2){ //smycka se zpozdenim 50ms
  8001a74:	f000 fc78 	bl	8002368 <HAL_GetTick>
  8001a78:	0002      	movs	r2, r0
  8001a7a:	4b5c      	ldr	r3, [pc, #368]	; (8001bec <main+0x1a0>)
@@ -3380,7 +3380,7 @@ int main(void)
 		  static uint32_t state_timeout = 0;
 
 
-		  	  if(!HAL_GPIO_ReadPin(GPIOC, S1_Pin)){
+		  	  if(!HAL_GPIO_ReadPin(GPIOC, S1_Pin)){ //tlacitko 1 pro temp
  8001a90:	4b57      	ldr	r3, [pc, #348]	; (8001bf0 <main+0x1a4>)
  8001a92:	2102      	movs	r1, #2
  8001a94:	0018      	movs	r0, r3
@@ -3400,7 +3400,7 @@ int main(void)
  8001aae:	e00e      	b.n	8001ace <main+0x82>
 		  	  }
 
-		  	  else if(!HAL_GPIO_ReadPin(GPIOC, S2_Pin)){
+		  	  else if(!HAL_GPIO_ReadPin(GPIOC, S2_Pin)){ //tlacitko 2 pro volt
  8001ab0:	4b4f      	ldr	r3, [pc, #316]	; (8001bf0 <main+0x1a4>)
  8001ab2:	2101      	movs	r1, #1
  8001ab4:	0018      	movs	r0, r3
@@ -3435,7 +3435,7 @@ int main(void)
  8001ae8:	701a      	strb	r2, [r3, #0]
 		  	  static int32_t temperature;
 		  	  static uint32_t voltage;
-		  	  switch (state)
+		  	  switch (state){
  8001aea:	4b42      	ldr	r3, [pc, #264]	; (8001bf4 <main+0x1a8>)
  8001aec:	781b      	ldrb	r3, [r3, #0]
  8001aee:	2b02      	cmp	r3, #2
@@ -3446,9 +3446,8 @@ int main(void)
  8001af8:	2b01      	cmp	r3, #1
  8001afa:	d053      	beq.n	8001ba4 <main+0x158>
  8001afc:	e06e      	b.n	8001bdc <main+0x190>
-		  	  {
-		  	  case SHOW_POT:
-		  	       sct_value(raw_pot * 500.5 / 4096, raw_pot * 9 / 4096);
+				  case SHOW_POT:
+					   sct_value(raw_pot * 500.5 / 4096, raw_pot * 9 / 4096);
  8001afe:	4b3f      	ldr	r3, [pc, #252]	; (8001bfc <main+0x1b0>)
  8001b00:	681b      	ldr	r3, [r3, #0]
  8001b02:	0018      	movs	r0, r3
@@ -3479,11 +3478,11 @@ int main(void)
  8001b3c:	b2db      	uxtb	r3, r3
  8001b3e:	0019      	movs	r1, r3
  8001b40:	f000 fa4c 	bl	8001fdc <sct_value>
-		  	       break;
+					   break;
  8001b44:	e04f      	b.n	8001be6 <main+0x19a>
 
-		  	  case SHOW_TEMP:
-		  		  temperature = (raw_temp - (int32_t)(*TEMP30_CAL_ADDR));
+				  case SHOW_TEMP:
+					  temperature = (raw_temp - (int32_t)(*TEMP30_CAL_ADDR));
  8001b46:	4b30      	ldr	r3, [pc, #192]	; (8001c08 <main+0x1bc>)
  8001b48:	681b      	ldr	r3, [r3, #0]
  8001b4a:	4a30      	ldr	r2, [pc, #192]	; (8001c0c <main+0x1c0>)
@@ -3492,7 +3491,7 @@ int main(void)
  8001b50:	001a      	movs	r2, r3
  8001b52:	4b2f      	ldr	r3, [pc, #188]	; (8001c10 <main+0x1c4>)
  8001b54:	601a      	str	r2, [r3, #0]
-		  		  temperature = temperature * (int32_t)(110 - 30);
+					  temperature = temperature * (int32_t)(110 - 30);
  8001b56:	4b2e      	ldr	r3, [pc, #184]	; (8001c10 <main+0x1c4>)
  8001b58:	681a      	ldr	r2, [r3, #0]
  8001b5a:	0013      	movs	r3, r2
@@ -3502,7 +3501,7 @@ int main(void)
  8001b62:	001a      	movs	r2, r3
  8001b64:	4b2a      	ldr	r3, [pc, #168]	; (8001c10 <main+0x1c4>)
  8001b66:	601a      	str	r2, [r3, #0]
-		  		  temperature = temperature / (int32_t)(*TEMP110_CAL_ADDR - *TEMP30_CAL_ADDR);
+					  temperature = temperature / (int32_t)(*TEMP110_CAL_ADDR - *TEMP30_CAL_ADDR);
  8001b68:	4b29      	ldr	r3, [pc, #164]	; (8001c10 <main+0x1c4>)
  8001b6a:	681b      	ldr	r3, [r3, #0]
  8001b6c:	4a29      	ldr	r2, [pc, #164]	; (8001c14 <main+0x1c8>)
@@ -3518,25 +3517,25 @@ int main(void)
  8001b82:	001a      	movs	r2, r3
  8001b84:	4b22      	ldr	r3, [pc, #136]	; (8001c10 <main+0x1c4>)
  8001b86:	601a      	str	r2, [r3, #0]
-		  		  temperature = temperature + 30;
+					  temperature = temperature + 30;
  8001b88:	4b21      	ldr	r3, [pc, #132]	; (8001c10 <main+0x1c4>)
  8001b8a:	681b      	ldr	r3, [r3, #0]
  8001b8c:	331e      	adds	r3, #30
  8001b8e:	001a      	movs	r2, r3
  8001b90:	4b1f      	ldr	r3, [pc, #124]	; (8001c10 <main+0x1c4>)
  8001b92:	601a      	str	r2, [r3, #0]
-		  		  sct_value(temperature, 0);
+					  sct_value(temperature, 0);
  8001b94:	4b1e      	ldr	r3, [pc, #120]	; (8001c10 <main+0x1c4>)
  8001b96:	681b      	ldr	r3, [r3, #0]
  8001b98:	b29b      	uxth	r3, r3
  8001b9a:	2100      	movs	r1, #0
  8001b9c:	0018      	movs	r0, r3
  8001b9e:	f000 fa1d 	bl	8001fdc <sct_value>
-		  		  break;
+					  break;
  8001ba2:	e020      	b.n	8001be6 <main+0x19a>
 
-		  	  case SHOW_VOLT:
-		  		  voltage = 330 * (*VREFINT_CAL_ADDR) / raw_volt;
+				  case SHOW_VOLT:
+					  voltage = 330 * (*VREFINT_CAL_ADDR) / raw_volt;
  8001ba4:	4b1c      	ldr	r3, [pc, #112]	; (8001c18 <main+0x1cc>)
  8001ba6:	881b      	ldrh	r3, [r3, #0]
  8001ba8:	001a      	movs	r2, r3
@@ -3556,30 +3555,27 @@ int main(void)
  8001bc6:	001a      	movs	r2, r3
  8001bc8:	4b15      	ldr	r3, [pc, #84]	; (8001c20 <main+0x1d4>)
  8001bca:	601a      	str	r2, [r3, #0]
-		  		  sct_value(voltage, 0);
+					  sct_value(voltage, 0);
  8001bcc:	4b14      	ldr	r3, [pc, #80]	; (8001c20 <main+0x1d4>)
  8001bce:	681b      	ldr	r3, [r3, #0]
  8001bd0:	b29b      	uxth	r3, r3
  8001bd2:	2100      	movs	r1, #0
  8001bd4:	0018      	movs	r0, r3
  8001bd6:	f000 fa01 	bl	8001fdc <sct_value>
-		  		  break;
+					  break;
  8001bda:	e004      	b.n	8001be6 <main+0x19a>
 
-		  	  default:
-		  		  state = SHOW_POT;
+				  default:
+					  state = SHOW_POT;
  8001bdc:	4b05      	ldr	r3, [pc, #20]	; (8001bf4 <main+0x1a8>)
  8001bde:	2200      	movs	r2, #0
  8001be0:	701a      	strb	r2, [r3, #0]
  8001be2:	e747      	b.n	8001a74 <main+0x28>
-	  }
-
-
-
+		  	  }
 
 	  }
  8001be4:	46c0      	nop			; (mov r8, r8)
-  {
+  while (1){
  8001be6:	e745      	b.n	8001a74 <main+0x28>
  8001be8:	20000028 	.word	0x20000028
  8001bec:	20000100 	.word	0x20000100
