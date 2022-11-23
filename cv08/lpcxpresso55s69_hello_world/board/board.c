@@ -46,6 +46,7 @@ void BOARD_InitDebugConsole_Core1(void)
                     uartClkSrcFreq);
 }
 
+
 #if defined(SDK_I2C_BASED_COMPONENT_USED) && SDK_I2C_BASED_COMPONENT_USED
 void BOARD_I2C_Init(I2C_Type *base, uint32_t clkSrc_Hz)
 {

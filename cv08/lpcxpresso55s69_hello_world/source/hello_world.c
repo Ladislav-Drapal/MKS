@@ -16,12 +16,16 @@
 #include "math.h"
 
 #include "fsl_power.h"
+
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
 #define USE_POWERQUAD 0
 #define PI 3.14
 #define TABLE_LENGHT 100
+
+#define X 94
+#define Y 251
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
@@ -57,6 +61,13 @@ index++;
 if(index==TABLE_LENGHT)index=0;
 }
 
+void function(uint32_t x, uint32_t y) //funkce promenne x a y, odkaz na void function
+{
+
+	x+y;
+
+}
+
 /*******************************************************************************
  * Code
  ******************************************************************************/
@@ -90,9 +101,81 @@ int main(void)
 
     Generate_sin_table_float(&SinTable_f[0],TABLE_LENGHT,1.0f, 1.0f);
 
+    uint32_t DWT1, DWT2;
+    uint32_t status;
+    uint32_t statusx;
+
+    int i;
+
+    char password[20] = "1234"; //set password
+    char input[20];
+
+    PRINTF("Enter password:\r\n");
+    SCANF("%s", input);
+    for(i = 0; input[i] == '\0'; i++);
+
+    if(i<status){
+    PRINTF("Correct:\r\n");
+    }
+    /*
+    else if(i=status) {
+    PRINTF("InCorrect:\r\n");
+    }
+    */
+    else{
+    PRINTF("InCorrect:\r\n");
+    }
+
+    DWT1=DWT -> CYCCNT;
+    status = strcmp(input,password);
+    DWT2=DWT -> CYCCNT;
+
+    PRINTF("Password:%s\r\n",input);
+    PRINTF("Clock in function:%d\r\n",DWT2-DWT1);
+
     while (1)
     {
         ch = GETCHAR();
         PUTCHAR(ch);
+
+    	// function(X,Y);
+/*
+    	PRINTF("Enter password:\r\n");
+    	SCANF("%s", input);
+    	DWT1=DWT -> CYCCNT;
+    	status = strcmp(input,password);
+    	DWT2=DWT -> CYCCNT;
+
+    	if(status==0){
+    		PRINTF("Correct:\r\n");
+    	}
+    	else{
+    		PRINTF("InCorrect:\r\n");
+    	}
+
+    	PRINTF("Password:%s\r\n",input);
+    	PRINTF("Clock in function:%d\r\n",DWT2-DWT1);
+*/
+
+        if (i > status) {
+			PRINTF("Correct:\r\n");
+		}
+		/*
+		 else if(i=status) {
+		 PRINTF("InCorrect:\r\n");
+		 }
+		 */
+
+		else {
+			PRINTF("InCorrect:\r\n");
+		}
+
+		DWT1 = DWT->CYCCNT;
+		status = strcmp(input, password);
+		DWT2 = DWT->CYCCNT;
+
+		PRINTF("Password:%s\r\n", input);
+		PRINTF("Clock in function:%d\r\n", DWT2 - DWT1);
+
     }
 }
