@@ -33,6 +33,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define DELAY 5000
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -47,6 +48,8 @@ UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
 static volatile int8_t key = -1;
+
+static uint8_t code[5] = {2,5,8,0,12};
 
 /* USER CODE END PV */
 
@@ -112,56 +115,97 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
+	/* USER CODE BEGIN 1 */
 
-  /* USER CODE END 1 */
+	/* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
+	/* MCU Configuration--------------------------------------------------------*/
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
 
-  /* USER CODE BEGIN Init */
+	/* USER CODE BEGIN Init */
 
-  /* USER CODE END Init */
+	/* USER CODE END Init */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+	/* Configure the system clock */
+	SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
+	/* USER CODE BEGIN SysInit */
 
-  /* USER CODE END SysInit */
+	/* USER CODE END SysInit */
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_USART3_UART_Init();
-  MX_TIM3_Init();
-  /* USER CODE BEGIN 2 */
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
+	MX_USART3_UART_Init();
+	MX_TIM3_Init();
+	/* USER CODE BEGIN 2 */
 
-  HAL_TIM_Base_Start_IT(&htim3);
+	HAL_TIM_Base_Start_IT(&htim3);
 
-  /* USER CODE END 2 */
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
-	 /* HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+	/* USER CODE END 2 */
+
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
+	while (1)
+	{
+		/* USER CODE END WHILE */
+
+		/* USER CODE BEGIN 3 */
+		/* HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
 	  HAL_Delay(250);
 	  printf("Ahoj!\n"); */
 
-	  if (key != -1) {
-		  printf("Stisknuto: %2d\n", key);
+		static uint32_t lastTicks = 0;
+		static uint8_t x=0;
 
-		  HAL_Delay(250);
-		  key = -1;
-	  }
+		static char value[5];
+		static uint8_t counter = 0;
 
-  }
-  /* USER CODE END 3 */
+		if (key != -1) {
+			printf("Stisknuto: %2d\n", key);
+
+			value[counter] = key;
+
+			if (code[counter] == value[counter] ){
+				x++;
+
+			}
+			counter++;
+			HAL_Delay(250);
+			key = -1;
+			if (counter >= 1) {
+				lastTicks = HAL_GetTick();
+			}
+
+
+			if  (counter >= 5) {
+				counter = 0;
+				HAL_GPIO_TogglePin(LD1_GPIO_Port, LD1_Pin);
+				HAL_Delay(250);
+				if (x == 5){
+					printf("Spravne: \n");
+				}
+				x = 0;
+			}
+		}
+
+
+
+
+		if ((counter >= 1) && (HAL_GetTick() >= lastTicks + DELAY)) {
+			counter = 0;
+			x = 0;
+			printf("Time_out: \n");
+
+
+		}
+
+	}
+
+/* USER CODE END 3 */
 }
 
 /**
