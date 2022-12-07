@@ -20,6 +20,7 @@
 #include "main.h"
 #include "usb_device.h"
 #include "usbd_hid.h"
+#include <math.h>
 
 
 /* Private includes ----------------------------------------------------------*/
@@ -59,6 +60,7 @@ static void MX_USART3_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+/*
 static void step (uint8_t buff_left, int8_t buff_x, int8_t buff_y, int8_t buff_null){
 	uint8_t buff[4];
 	buff[0] = 0x01; // stiskni leve tlacitko
@@ -68,8 +70,57 @@ static void step (uint8_t buff_left, int8_t buff_x, int8_t buff_y, int8_t buff_n
 	USBD_HID_SendReport(&hUsbDeviceFS, buff, sizeof(buff));
 	HAL_Delay(USBD_HID_GetPollingInterval(&hUsbDeviceFS));
 }
+*/
+static void step (uint8_t buff_left, int8_t buff_x, int8_t buff_y){
+	uint8_t buff[4];
+	buff[0] = buff_left;
+	buff[1] = buff_x;
+	buff[2] = buff_y;
+	buff[3] = 0;
+	USBD_HID_SendReport(&hUsbDeviceFS, buff, sizeof(buff));
+	HAL_Delay(USBD_HID_GetPollingInterval(&hUsbDeviceFS));
+}
+
+static void paint(uint8_t r){
+	float x;
+	float y;
+	float x1 = 0;
+    float y2 = 0;
+	float phi;
 
 
+	for (uint16_t i = 0; i<=360; i+=10){
+		phi = 2*3.14159265359*(i)/360;
+		x = r * sin(phi);
+		y = r * cos(phi);
+		step(1,x-x1,y-y2);
+
+		x1=x;
+	    y2=y;
+
+	}
+	step(0,0,0);
+}
+
+static void eye(uint8_t r2){
+	paint(r2);
+
+}
+static void eye2(uint8_t r2){
+	paint(r2);
+
+}
+static void nose(uint8_t r3){
+	step(0, 50,1);
+	step(1, 0, 0);
+	step(1, 0,30);
+	step(0, 0, 0);
+}
+
+static void eye3(uint8_t r4){
+	paint(r4);
+
+}
 
 /* USER CODE END 0 */
 
@@ -114,8 +165,27 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+/*	  if (HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin)){
+		  step(0,0,0,0);
+	  } */
+
 	  if (HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin)){
-		  step(1,10,0,0);
+		  paint(100);
+		  step(0, 30, -80);
+		  step(0, 0, 1);
+		  eye(40);
+		  step(0, -70, -30);
+		  step(0, 0, 1);
+		  eye2(40);
+		  step(0, 0, 1);
+		  nose(10);
+		  paint(20);
+		  step(0, 0, -20);
+		  step(0, 0, 1);
+
+
+
+
 	  }
 
   }
