@@ -854,7 +854,7 @@ void sct_led(uint32_t value){
  800057c:	2200      	movs	r2, #0
  800057e:	701a      	strb	r2, [r3, #0]
  8000580:	e01e      	b.n	80005c0 <sct_led+0x50>
-		HAL_GPIO_WritePin(SCT_SDI_GPIO_Port, SCT_SDI_Pin, value & 1);
+		HAL_GPIO_WritePin(SCT_SDI_GPIO_Port, SCT_SDI_Pin, value & 1);  //pouziti hal_gpio primo z knihoven
  8000582:	687b      	ldr	r3, [r7, #4]
  8000584:	b2db      	uxtb	r3, r3
  8000586:	2201      	movs	r2, #1

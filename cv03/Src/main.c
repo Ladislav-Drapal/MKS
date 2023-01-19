@@ -52,9 +52,12 @@ int main(void)
 	for (volatile uint32_t i =0; i < 300000; i++) {}
 
 	for(;;) {
-		for (uint16_t j = 0; j < 10; j++) {
-			sct_value(j*111);
-			for (volatile uint32_t i =0; i < 500000; i++) {}
+		for (uint16_t j = 0; j < 3600; j++) {
+			sct_value(j);
+			//sct_led(0x80088);
+			for (volatile uint32_t i =0; i < 50000; i++) { //casovani, 500 000 = 1s
+				//sct_led(0x0);
+			}
 		}
 
 
