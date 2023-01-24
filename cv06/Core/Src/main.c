@@ -135,7 +135,7 @@ int main(void)
 		static int16_t ntc_value = 0;
 
 
-		static enum {SHOW_Meas,SHOW_NTC} state = SHOW_Meas;
+		static enum {SHOW_Meas,SHOW_NTC} state = SHOW_Meas; //stavovy automat
 
 
 		if (HAL_GetTick() >= lastMeasurementTicks + 750) {

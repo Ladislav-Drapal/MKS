@@ -179,4 +179,4 @@ VP_ADC_Vref_Input.Mode=IN-Vrefint
 VP_ADC_Vref_Input.Signal=ADC_Vref_Input
 board=NUCLEO-F030R8
 boardIOC=true
-isbadioc=false
+isbadioc=true
