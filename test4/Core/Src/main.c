@@ -91,7 +91,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   sct_init();
-  sct_led(0x300675F5);
+  sct_led(0x300671F5);
   HAL_Delay(1000);   //zpozdeni slova na sct_led
 
   /* USER CODE END 2 */
@@ -122,7 +122,7 @@ int main(void)
 
 			switch (state) {
 			case SHOW_Name:
-				sct_led(0x300675F5);
+				sct_led(0x300671F5);
 
 				break;
 

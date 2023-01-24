@@ -1305,7 +1305,7 @@ int main(void)
  80008c2:	f000 fd7f 	bl	80013c4 <HAL_ADC_Start>
 
 
-		static enum {SHOW_Meas,SHOW_NTC} state = SHOW_Meas;
+		static enum {SHOW_Meas,SHOW_NTC} state = SHOW_Meas; //stavovy automat
 
 
 		if (HAL_GetTick() >= lastMeasurementTicks + 750) {

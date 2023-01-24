@@ -264,7 +264,7 @@ int main(void)
 
   sct_init();
  8000236:	f000 f9d1 	bl	80005dc <sct_init>
-  sct_led(0x300675F5);
+  sct_led(0x300671F5);
  800023a:	4b32      	ldr	r3, [pc, #200]	; (8000304 <main+0xe4>)
  800023c:	0018      	movs	r0, r3
  800023e:	f000 f98d 	bl	800055c <sct_led>
@@ -337,7 +337,7 @@ int main(void)
  80002ac:	2b01      	cmp	r3, #1
  80002ae:	d123      	bne.n	80002f8 <main+0xd8>
 			case SHOW_Name:
-				sct_led(0x300675F5);
+				sct_led(0x300671F5);
  80002b0:	4b14      	ldr	r3, [pc, #80]	; (8000304 <main+0xe4>)
  80002b2:	0018      	movs	r0, r3
  80002b4:	f000 f952 	bl	800055c <sct_led>
@@ -400,7 +400,7 @@ int main(void)
  8000300:	46c0      	nop			; (mov r8, r8)
   {
  8000302:	e7a3      	b.n	800024c <main+0x2c>
- 8000304:	300675f5 	.word	0x300675f5
+ 8000304:	300671f5 	.word	0x300671f5
  8000308:	200000b0 	.word	0x200000b0
  800030c:	48000800 	.word	0x48000800
  8000310:	20000000 	.word	0x20000000
