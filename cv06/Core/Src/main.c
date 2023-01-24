@@ -36,7 +36,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
-#define DISPLAY_PERIOD 50
+#define DISPLAY_PERIOD 50;
 
 /* USER CODE END PD */
 
